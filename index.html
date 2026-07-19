@@ -8,8 +8,8 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f5f5f5;color:#333;min-height:100vh}
 .header{position:sticky;top:0;z-index:100;background:#1a1a2e;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.header h1{color:#fff;font-size:18px;margin-bottom:8px}
-.header .stats{color:#888;font-size:12px;margin-bottom:2px}
+.header h1{color:#fff;font-size:18px;margin-bottom:4px}
+.header .stats{color:#888;font-size:12px;margin-bottom:4px}
 #search{width:100%;padding:10px 14px;border:none;border-radius:8px;font-size:15px;background:#2a2a4a;color:#fff;outline:none}
 #search::placeholder{color:#777}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
@@ -79,9 +79,8 @@ function renderFilters(){
 
 function filterTag(tag){currentTag = tag;renderFilters();renderList()}
 
-function getMatchImgs(seq, name){
+function getMatchImgs(seq){
   if(IMG_MAP[seq]) return IMG_MAP[seq];
-  if(IMG_MAP[name]) return IMG_MAP[name];
   return [];
 }
 
@@ -100,18 +99,18 @@ function renderList(){
     }
     count++;
     var pid = 'item'+i;
-    var imgs = getMatchImgs(d.s, d.n);
+    var imgs = getMatchImgs(d.s);
     var galleryHtml = '';
     if(imgs.length>0){
       galleryHtml += '<div class="gallery">';
       imgs.forEach(function(f){
         var src = 'img/'+d.s+'/'+encodeURIComponent(f);
-        galleryHtml += '<img src="'+src+'" loading="lazy" onclick="event.stopPropagation();sh('+"'"+src.replace(/'/g,"\\'")+"'"+')">';
+        galleryHtml += '<img src="'+src+'" loading="lazy" onclick="event.stopPropagation();sh(\''+src.replace(/'/g,"\\'")+'\')" onerror="this.style.display=\'none\'">';
       });
       galleryHtml += '</div>';
     }
     var imgBadge = imgs.length>0 ? ' 📷'+imgs.length : '';
-    html += '<div class="card" id="'+pid+'" onclick="toggle(\''+pid+'\',\''+d.n.replace(/'/g,"\\'")+'\')">'+
+    html += '<div class="card" id="'+pid+'" onclick="toggle(\''+pid+'\')">'+
       '<div class="card-header"><div class="card-name">'+d.n+imgBadge+'</div></div>'+
       '<div class="card-meta">'+
         (d.i?'<span class="tag ind">'+d.i+'</span>':'')+
@@ -134,7 +133,7 @@ function renderList(){
       '</div>'+
     '</div>';
   });
-  list.innerHTML = html || '<div class="empty">��有匹配的项目</div>';
+  list.innerHTML = html || '<div class="empty">没有匹配的项目</div>';
   document.getElementById('count').textContent = '显示 '+count+' / '+DATA.length+' 条';
 }
 
@@ -143,15 +142,13 @@ function makeRow(label,value){
   return '<div class="detail-row"><div class="detail-label">'+label+'</div><div class="detail-value">'+value+'</div></div>';
 }
 
-function toggle(id,name){
+function toggle(id){
   var el = document.getElementById(id);
-  var wasOpen = el.classList.contains('open');
+  if(el.classList.contains('open')){ el.classList.remove('open'); return }
   var all = document.querySelectorAll('.card.open');
   for(var i=0;i<all.length;i++) all[i].classList.remove('open');
-  if(!wasOpen){
-    el.classList.add('open');
-    el.scrollIntoView({behavior:'smooth',block:'nearest'});
-  }
+  el.classList.add('open');
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function sh(src){
