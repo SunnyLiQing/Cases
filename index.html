@@ -105,7 +105,7 @@ function renderList(){
     if(imgs.length>0){
       galleryHtml += '<div class="gallery">';
       imgs.forEach(function(f){
-        var src = encodeURIComponent(d.n)+'/'+encodeURIComponent(f);
+        var src = 'img/'+d.s+'/'+encodeURIComponent(f);
         galleryHtml += '<img src="'+src+'" loading="lazy" onclick="event.stopPropagation();sh('+"'"+src.replace(/'/g,"\\'")+"'"+')">';
       });
       galleryHtml += '</div>';
